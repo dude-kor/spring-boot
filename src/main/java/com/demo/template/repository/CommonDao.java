@@ -15,12 +15,10 @@ public class CommonDao {
   @Autowired
   SqlSession sqlSession;
 
-  // private static final String SQL_PREFIX = CommonDao.class.getCanonicalName();
-  private static final String SQL_PREFIX = "com.demo.template.repository.CommonDao";
-
   public List<CommonDto> selectBagIdList(CommonDto dto) {
-    LOGGER.warn(SQL_PREFIX);
-    return sqlSession.selectList(SQL_PREFIX + ".selectBagIdListByBagType", dto);
+    LOGGER.warn(this.getClass().getCanonicalName());
+    return sqlSession.selectList(this.getClass().getCanonicalName() + ".selectBagIdListByBagType",
+        dto);
   }
 
 }

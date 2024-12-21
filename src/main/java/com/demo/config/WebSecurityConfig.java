@@ -4,6 +4,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -19,22 +21,28 @@ public class WebSecurityConfig {
 
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    // 약한 결합 방식
-    // http.authorizeHttpRequests(authorizeRequests -> authorizeRequests.anyRequest().permitAll());
-
-    http.authorizeHttpRequests(authorizeRequests -> authorizeRequests
-        // .requestMatchers("/controller").hasRole("user")
-        // .requestMatchers("/controller").hasRole("admin")
-        .anyRequest().authenticated())
+    return http.csrf(AbstractHttpConfigurer::disable)
         .formLogin(formLogin -> formLogin.usernameParameter("username")
-            .passwordParameter("password").defaultSuccessUrl("/", true));
-    return http.build();
+            .passwordParameter("password").loginPage("/login").loginProcessingUrl("/login-process")
+            .defaultSuccessUrl("/main", true).failureUrl("/login-fail"))
+        .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
+            // 특정 권한을 소유하고 있는 사용자
+            // .requestMatchers(AntPathRequestMatcher.antMatcher("/auth/**")).authenticated()
+            // ADMIN 권한을 소유하고 있는 사용자
+            // .requestMatchers("/controller/**").hasAnyRole("ADMIN").anyRequest().permitAll())
+            .anyRequest().permitAll())
+        // https://velog.io/@kide77/Spring-Boot-3.x-Security-기본-설정-및-변화
+        .headers(headersConfigurer -> headersConfigurer
+            .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
+        .build();
   }
 
   @Bean
   public UserDetailsService userDetailsService() {
     InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
-    manager.createUser(User.withUsername("user").password("1234").roles("user").build());
+
+    manager.createUser(User.withUsername("user").password("1234").roles("USER").build());
+    manager.createUser(User.withUsername("admin").password("1234").roles("ADMIN").build());
     return manager;
   }
 
@@ -43,8 +51,9 @@ public class WebSecurityConfig {
    * 
    * @return
    */
-  // @Bean
-  // public PasswordEncoder passwordEncoder() {
-  // return PasswordEncoderFactories.createDelegatingPasswordEncoder();
-  // }
+  @Bean
+  public PasswordEncoder passwordEncoder() {
+    return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+  }
+
 }
