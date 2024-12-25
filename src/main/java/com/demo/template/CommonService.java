@@ -7,5 +7,5 @@ import com.demo.template.entity.CommonDto;
 @Component
 public interface CommonService {
 
-  public List<CommonDto> selectBagIdList(CommonDto dto);
+  public List<CommonDto> selectBagIdListByBagType(CommonDto dto);
 }

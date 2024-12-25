@@ -1,4 +1,4 @@
-package com.demo.template;
+package com.demo.template.mapper;
 
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;

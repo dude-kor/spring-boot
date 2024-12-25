@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<!-- <mapper namespace="com.demo.template.repository.CommonDao"> -->
-<mapper namespace="com.demo.template.CommonMapper">
+<mapper namespace="com.demo.template.mapper.CommonMapper">
   <select
     id="selectBagIdListByBagType"
     parameterType="com.demo.template.entity.CommonDto"
